@@ -1,0 +1,26 @@
+{
+  "name": "seben-notes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Seben Notes : bloc-notes intelligent (site installable et application Android).",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "android": "npm run build && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "6.2.2",
+    "@capacitor/app": "6.0.2",
+    "@capacitor/core": "6.2.2",
+    "@capacitor/filesystem": "6.0.4",
+    "@capacitor/share": "6.0.4",
+    "html2canvas": "1.4.1",
+    "jspdf": "2.5.1",
+    "jszip": "3.10.1",
+    "pdfjs-dist": "3.11.174",
+    "pptxgenjs": "3.12.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "6.2.2"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "appId": "com.hamadoudiarra.sebennotes",
+  "appName": "Seben Notes",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
