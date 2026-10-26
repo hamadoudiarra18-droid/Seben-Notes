@@ -184,6 +184,19 @@ input,select,textarea{font:inherit;color:inherit}
 .imgmenu button:hover{background:color-mix(in srgb,var(--bg) 18%,transparent)}
 
 /* Sheets, dialogs, toasts */
+.drawer-scrim{position:fixed;inset:0;z-index:55;background:rgba(8,14,12,.45);animation:fade .15s ease}
+.drawer-scrim.out{opacity:0;transition:opacity .15s}
+.drawer{position:absolute;top:0;bottom:0;left:0;width:min(82vw,330px);background:var(--surface);border-radius:0 24px 24px 0;padding:calc(10px + env(safe-area-inset-top,0px)) 12px calc(16px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.25);animation:slidein .18s ease}
+@keyframes slidein{from{transform:translateX(-100%)}to{transform:none}}
+.drawer-top{display:flex;justify-content:flex-end;margin-bottom:6px}
+.drow{display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:8px 16px;border-radius:14px;text-align:left;font-size:16px;color:var(--ink)}
+.drow.on{background:var(--accent-soft);font-weight:700}
+.drow .dl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .dn{color:var(--muted);font-size:14px}
+.drow.sub{min-height:44px;font-size:15px}
+.drow .fdot{width:12px;height:12px;border-radius:4px;flex:none}
+.ddots{border:0;border-top:2px dotted var(--line);margin:8px 12px}
+.drawer-manage{display:flex;justify-content:center;width:calc(100% - 24px);margin:18px 12px 0}
 .scrim{position:fixed;inset:0;z-index:50;background:rgba(8,14,12,.45);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease}
 .sheet{background:var(--surface);width:100%;max-width:640px;max-height:88vh;max-height:88dvh;overflow:auto;border-radius:22px 22px 0 0;padding:8px max(18px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .2s ease}
 .sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
@@ -381,6 +394,7 @@ textarea.input{resize:vertical;min-height:84px;line-height:1.45}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
@@ -938,7 +952,8 @@ function renderHome() {
   </div>
   <div class="notes list">${list.map(cardHtml).join("")}</div>` : `
   <div class="topbar">
-    <h1>${S.archive ? "Archives" : S.folder ? esc(fNow.name) : "Seben Notes"}</h1>
+    <button class="iconbtn" data-a="drawer" aria-label="Menu">${ic("menu")}</button>
+    <h1>${S.archive ? "Archives" : S.folder ? esc(fNow.name) : S.cat === "fav" ? "Favoris" : "Seben Notes"}</h1>
     <button class="iconbtn" data-a="backup" aria-label="Sauvegarder mes notes">${ic("dl")}</button>
     <button class="iconbtn" data-a="view" aria-label="Afficher">${ic(S.settings.view === "list" || S.settings.view === "simple" ? "list" : "grid")}</button>
     <button class="iconbtn" data-a="more" aria-label="Plus d'options">${ic("more")}</button>
@@ -1009,6 +1024,7 @@ $("#v-home").addEventListener("click", async e => {
   if (a === "selcancel") { exitSelect(); return; }
   if (a === "archive") { S.archive = !S.archive; S.folder = null; S.cat = "all"; S.q = ""; renderHome(); return; }
   if (a === "backup") { backupDialog(); return; }
+  if (a === "drawer") { openDrawer(); return; }
   if (a === "search") { S.searchOpen = !S.searchOpen; if (!S.searchOpen) S.q = ""; renderHome(); if (S.searchOpen) $("#q").focus(); }
   if (a === "clearq") { S.q = ""; renderHome(); $("#q") && $("#q").focus(); }
   if (a === "view") { pickView(); return; }
@@ -1043,6 +1059,41 @@ async function folderMenu(fid) {
     if (S.folder === fid) S.folder = f.parent || null;
     await Store.remove(fid); onDataChanged();
   }
+}
+function openDrawer() {
+  const live = liveNotes(), active = live.filter(n => !n.archived);
+  const tree = (parent, depth) => folders().filter(f => (f.parent || null) === parent).sort((a, b) => (a.created || 0) - (b.created || 0))
+    .map(f => `<button class="drow sub ${S.folder === f.id ? "on" : ""}" data-dr="folder" data-id="${f.id}" style="padding-left:${16 + depth * 18}px"><span class="fdot" style="background:var(--f-${f.color || "none"})"></span><span class="dl">${esc(f.name)}</span><span class="dn">${countIn(f.id)}</span></button>` + tree(f.id, depth + 1)).join("");
+  const on = k => (k === "all" && !S.archive && !S.folder && S.cat === "all") || (k === "fav" && !S.archive && S.cat === "fav") || (k === "arch" && S.archive) ? "on" : "";
+  const row = (k, icon, label, n) => `<button class="drow ${on(k)}" data-dr="${k}">${ic(icon)}<span class="dl">${label}</span><span class="dn">${n}</span></button>`;
+  const wrap = document.createElement("div");
+  wrap.className = "drawer-scrim";
+  wrap.innerHTML = `<aside class="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-top"><button class="iconbtn" data-dr="set" aria-label="Réglages">${ic("set")}</button></div>
+    ${row("all", "note", "Toutes les notes", active.length)}
+    ${row("fav", "star", "Favoris", active.filter(n => n.fav).length)}
+    ${row("rem", "bell", "Rappels", active.filter(n => n.reminder && !n.reminder.done).length)}
+    ${row("arch", "archive", "Archives", live.filter(n => n.archived).length)}
+    ${row("trash", "trash", "Corbeille", notes().filter(n => n.deleted).length)}
+    <hr class="ddots">
+    <button class="drow" data-dr="folders">${ic("folder")}<span class="dl">Dossiers</span><span class="dn">${active.filter(n => n.folder).length}</span></button>
+    ${tree(null, 1)}
+    <button class="btn drawer-manage" data-dr="manage">Gérer les dossiers</button>
+  </aside>`;
+  const close = () => { wrap.classList.add("out"); setTimeout(() => wrap.remove(), 160); };
+  wrap.addEventListener("click", e => {
+    if (e.target === wrap) { close(); return; }
+    const b = e.target.closest("[data-dr]"); if (!b) return;
+    const k = b.dataset.dr; close();
+    if (k === "set") { show("set"); return; }
+    if (k === "trash") { show("trash"); return; }
+    if (k === "rem") { show("rem"); return; }
+    if (k === "manage") { manageFolders(); return; }
+    S.q = ""; S.selecting = false;
+    S.archive = k === "arch"; S.cat = k === "fav" ? "fav" : "all"; S.folder = k === "folder" ? b.dataset.id : null;
+    show("home"); window.scrollTo(0, 0);
+  });
+  document.body.append(wrap);
 }
 function manageFolders() {
   const rows = [];

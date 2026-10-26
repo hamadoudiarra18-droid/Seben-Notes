@@ -9,7 +9,7 @@
 
   // Back button: returns true when the app handled it, false when the app should close.
   window.sebenBack = function () {
-    const scrim = document.querySelector(".scrim");
+    const scrim = document.querySelector(".scrim, .drawer-scrim");
     if (scrim) { scrim.dispatchEvent(new MouseEvent("click", { bubbles: true })); return true; }
     if (typeof S === "undefined") return false;
     if (S.view === "editor" && typeof closeEditor === "function") { closeEditor(); return true; }
