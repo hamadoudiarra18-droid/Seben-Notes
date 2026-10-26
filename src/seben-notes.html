@@ -960,11 +960,10 @@ function renderHome() {
   </div>
   <div class="home-summary"><span>${S.archive ? archived + " note(s) archivée(s)" : total + " note(s) · " + folders().length + " dossiers"}</span><span class="syncpill ${S.mode === "local" ? "local" : ""}"><i></i>${S.mode === "cloud" ? "Compte connecté" : "Sur cet appareil"}</span></div>
   <label class="searchbox">${ic("search", "sm")}<input id="q" aria-label="Rechercher une note" placeholder="${S.archive ? "Rechercher dans les archives" : S.folder ? "Rechercher dans ce dossier" : "Rechercher une note…"}" value="${esc(S.q)}" autocomplete="off"><button data-a="clearq" aria-label="Effacer la recherche" ${S.q ? "" : "hidden"}>${ic("x", "sm")}</button></label>
-  <div class="crumbs">${ic("folder", "sm")}<button data-crumb="">Toutes les notes</button>${path.map(f => `${ic("chev", "sm")}<button data-crumb="${f.id}">${esc(f.name)}</button>`).join("")}</div>
-  <div class="folders" ${S.archive ? "hidden" : ""}>
+  ${S.folder ? `<div class="crumbs">${ic("folder", "sm")}<button data-crumb="">Toutes les notes</button>${path.map(f => `${ic("chev", "sm")}<button data-crumb="${f.id}">${esc(f.name)}</button>`).join("")}</div>` : ""}
+  ${S.folder && !S.archive && kids.length ? `<div class="folders">
     ${kids.map(f => `<div class="fcard" role="button" tabindex="0" data-folder="${f.id}" style="--fc:var(--f-${f.color || "none"})"><span class="n">${countIn(f.id)}</span><span class="nm">${esc(f.name)}</span><button class="fmore" data-fmore="${f.id}" aria-label="Options du dossier">${ic("more", "sm")}</button></div>`).join("")}
-    <button class="fcard add" data-a="newfolder">${ic("plus")}<span style="font-size:12.5px;font-weight:600">${S.folder ? "Sous-dossier" : "Dossier"}</span></button>
-  </div>
+  </div>` : ""}
   <div class="chips">
     <button class="chip ${S.cat === "all" ? "on" : ""}" data-cat="all">Toutes</button>
     <button class="chip ${S.cat === "fav" ? "on" : ""}" data-cat="fav">${ic("star", "sm")}Favoris</button>
