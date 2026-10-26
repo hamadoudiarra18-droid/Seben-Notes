@@ -2,3 +2,8 @@ node_modules/
 www/
 android/
 *.apk
+codeassist/SebenNotes/app/src/main/assets/
+codeassist/SebenNotes/.gradle/
+codeassist/SebenNotes/build/
+codeassist/SebenNotes/app/build/
+dist/

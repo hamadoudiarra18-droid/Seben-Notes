@@ -83,6 +83,20 @@ input,select,textarea{font:inherit;color:inherit}
 .listbar .sortbtn{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;font-weight:600}
 .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:8px}
 .notes.list{grid-template-columns:1fr}
+.notes.v-small{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.notes.v-small .card{min-height:110px;padding:9px 9px 8px;gap:4px}
+.notes.v-small .card h3{font-size:13px}
+.notes.v-small .card .snip{font-size:11.5px;-webkit-line-clamp:3}
+.notes.v-small .card footer .tag{display:none}
+.notes.v-simple{gap:0;background:var(--surface);border-radius:var(--r);border:1px solid var(--line);overflow:hidden}
+.notes.v-simple .card{min-height:0;box-shadow:none;border:0;border-radius:0;border-top:1px solid var(--line);flex-direction:row;align-items:center;padding:12px 14px;background:var(--surface)}
+.notes.v-simple .card:first-child{border-top:0}
+.notes.v-simple .card h3{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+.notes.v-simple .card .snip,.notes.v-simple .card .thumb,.notes.v-simple .card .locked-snip,.notes.v-simple .card footer .tag{display:none}
+.notes.v-simple .card footer{margin:0;flex:none}
+.notes.v-simple .card .flags{position:static;order:-1}
+.sec-h{display:flex;align-items:center;gap:6px;margin:16px 2px 4px;font-size:14px;font-weight:700;color:var(--muted)}
+.sec-h .ic{color:#E8B400}
 .card{position:relative;text-align:left;background:var(--tint,var(--surface));border-radius:var(--r);padding:12px 12px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;min-height:150px;min-width:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 .notes.list .card{min-height:0}
 .card h3{margin:0;font-size:15px;font-weight:700;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
@@ -121,6 +135,9 @@ input,select,textarea{font:inherit;color:inherit}
 .ed-save[data-state="error"]{color:var(--danger)}
 .ed-meta{flex:none;display:flex;gap:6px;overflow-x:auto;padding:0 max(12px,env(safe-area-inset-left,0px)) 8px;scrollbar-width:none}
 .ed-meta::-webkit-scrollbar{display:none}
+/* While typing (keyboard open), keep only the title, the text and the format bar */
+.ed.typing .ed-meta,.ed.typing .ed-tools,.ed.typing .ed-save,.ed.typing .addpage{display:none}
+.ed.typing .topbar{padding-top:4px;padding-bottom:4px;min-height:0}
 .ed-meta .chip{height:30px;font-size:12.5px;padding:0 10px}
 .ed-meta .dot{width:12px;height:12px;border-radius:50%;background:var(--tint);border:1px solid var(--line)}
 .ed-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px max(10px,env(safe-area-inset-right,0px)) 30px max(10px,env(safe-area-inset-left,0px))}
@@ -167,6 +184,19 @@ input,select,textarea{font:inherit;color:inherit}
 .imgmenu button:hover{background:color-mix(in srgb,var(--bg) 18%,transparent)}
 
 /* Sheets, dialogs, toasts */
+.drawer-scrim{position:fixed;inset:0;z-index:55;background:rgba(8,14,12,.45);animation:fade .15s ease}
+.drawer-scrim.out{opacity:0;transition:opacity .15s}
+.drawer{position:absolute;top:0;bottom:0;left:0;width:min(82vw,330px);background:var(--surface);border-radius:0 24px 24px 0;padding:calc(10px + env(safe-area-inset-top,0px)) 12px calc(16px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.25);animation:slidein .18s ease}
+@keyframes slidein{from{transform:translateX(-100%)}to{transform:none}}
+.drawer-top{display:flex;justify-content:flex-end;margin-bottom:6px}
+.drow{display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:8px 16px;border-radius:14px;text-align:left;font-size:16px;color:var(--ink)}
+.drow.on{background:var(--accent-soft);font-weight:700}
+.drow .dl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .dn{color:var(--muted);font-size:14px}
+.drow.sub{min-height:44px;font-size:15px}
+.drow .fdot{width:12px;height:12px;border-radius:4px;flex:none}
+.ddots{border:0;border-top:2px dotted var(--line);margin:8px 12px}
+.drawer-manage{display:flex;justify-content:center;width:calc(100% - 24px);margin:18px 12px 0}
 .scrim{position:fixed;inset:0;z-index:50;background:rgba(8,14,12,.45);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease}
 .sheet{background:var(--surface);width:100%;max-width:640px;max-height:88vh;max-height:88dvh;overflow:auto;border-radius:22px 22px 0 0;padding:8px max(18px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .2s ease}
 .sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
@@ -364,6 +394,7 @@ textarea.input{resize:vertical;min-height:84px;line-height:1.45}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
@@ -463,7 +494,7 @@ const COLOR_FR = { none: "Aucune", yellow: "Jaune", green: "Vert", blue: "Bleu",
 const PEN_COLORS = ["#1b1b1b", "#2457C5", "#C8452F", "#0C7A63", "#E9702A", "#8456D6", "#D9467A", "#8a8f8d"];
 const HL_COLORS = ["#FFD84D", "#7CE3A2", "#79C2FF", "#FF9BC0", "#FFB067"];
 const LANGS = ["Français", "Anglais", "Bambara", "Arabe", "Espagnol", "Portugais", "Allemand", "Italien", "Chinois", "Wolof", "Peul (Fulfulde)", "Haoussa", "Swahili", "Turc", "Russe", "Japonais"];
-const DEF_SETTINGS = { theme: "system", accent: "green", size: "m", view: "grid", sort: "updated", aiLang: "Français", categories: ["Urgent", "À faire", "Idée"], pin: null, autolock: true, lastBackup: null, defPaper: "plain", schemaVersion: 2 };
+const DEF_SETTINGS = { theme: "system", accent: "green", size: "m", view: "grid", sort: "updated", favTop: true, aiLang: "Français", categories: ["Urgent", "À faire", "Idée"], pin: null, autolock: true, lastBackup: null, defPaper: "plain", schemaVersion: 2 };
 
 const S = { items: new Map(), settings: { ...DEF_SETTINGS }, mode: "loading", folder: null, cat: "all", q: "", searchOpen: true, archive: false, aiAvailable: false, view: "home", unlocked: false, noteOk: new Set(), chat: [], selecting: false, picked: new Set() };
 
@@ -864,6 +895,25 @@ function applySettings() {
 $("#bnav").addEventListener("click", e => { const b = e.target.closest("[data-nav]"); if (b) show(b.dataset.nav); });
 
 /* ---------- home ---------- */
+const SORTS = {
+  "created-asc": { label: "Date de création (ordre croissant)", short: "Créées ↑", key: ["created", 1] },
+  created: { label: "Date de création (ordre décroissant)", short: "Créées", key: ["created", -1] },
+  "updated-asc": { label: "Date de modification (ordre croissant)", short: "Modifiées ↑", key: ["updated", 1] },
+  updated: { label: "Date de modification (ordre décroissant)", short: "Modifiées", key: ["updated", -1] },
+  title: { label: "Nom (A à Z)", short: "A → Z", key: ["title", 1] },
+  "title-desc": { label: "Nom (Z à A)", short: "Z → A", key: ["title", -1] }
+};
+const VIEWS = { grid: "Grille (grande)", small: "Grille (petite)", list: "Liste", simple: "Liste simple" };
+function notesHtml(list) {
+  const v = VIEWS[S.settings.view] ? S.settings.view : "grid";
+  const box = arr => `<div class="notes v-${v} ${v === "list" || v === "simple" ? "list" : ""}">${arr.map(cardHtml).join("")}</div>`;
+  const favs = list.filter(n => n.fav);
+  if (S.settings.favTop && S.cat === "all" && !S.selecting && !S.q && favs.length && favs.length < list.length)
+    return `<h2 class="sec-h">${ic("star", "sm")}Favoris</h2>${box(favs)}<h2 class="sec-h">Toutes les notes</h2>${box(list.filter(n => !n.fav))}`;
+  return box(list);
+}
+async function pickView() { const v = await pick("Afficher", Object.entries(VIEWS).map(([value, label]) => ({ label, value })), S.settings.view); if (v) { S.settings.view = v; Store.putSettings(); render(); } }
+async function pickSort() { const v = await pick("Trier par", Object.entries(SORTS).map(([value, o]) => ({ label: o.label, value })), SORTS[S.settings.sort] ? S.settings.sort : "updated"); if (v) { S.settings.sort = v; Store.putSettings(); render(); } }
 function filteredNotes() {
   let list = liveNotes().filter(n => !!n.archived === S.archive);
   if (S.folder) { const d = descendants(S.folder); list = list.filter(n => d.has(n.folder)); }
@@ -871,8 +921,9 @@ function filteredNotes() {
   else if (S.cat === "rem") list = list.filter(n => n.reminder && !n.reminder.done);
   else if (S.cat !== "all") list = list.filter(n => n.category === S.cat);
   if (S.q) { const q = norm(S.q); list = list.filter(n => norm(n.title).includes(q) || (n.tags || []).some(t => norm("#" + t).includes(q)) || (!n.locked && norm(noteText(n)).includes(q))); }
-  const k = S.settings.sort;
-  list.sort((a, b) => (b.pinned - a.pinned) || (k === "title" ? (a.title || "").localeCompare(b.title || "", "fr") : (b[k] || 0) - (a[k] || 0)));
+  const [k, dir] = SORTS[S.settings.sort] ? SORTS[S.settings.sort].key : ["updated", -1];
+  const title = n => (n.title || n.text || "").trim();
+  list.sort((a, b) => (b.pinned - a.pinned) || (k === "title" ? dir * title(a).localeCompare(title(b), "fr") : dir * ((a[k] || 0) - (b[k] || 0))));
   return list;
 }
 function renderHome() {
@@ -901,26 +952,26 @@ function renderHome() {
   </div>
   <div class="notes list">${list.map(cardHtml).join("")}</div>` : `
   <div class="topbar">
-    <h1>${S.archive ? "Archives" : S.folder ? esc(fNow.name) : "Seben Notes"}</h1>
+    <button class="iconbtn" data-a="drawer" aria-label="Menu">${ic("menu")}</button>
+    <h1>${S.archive ? "Archives" : S.folder ? esc(fNow.name) : S.cat === "fav" ? "Favoris" : "Seben Notes"}</h1>
     <button class="iconbtn" data-a="backup" aria-label="Sauvegarder mes notes">${ic("dl")}</button>
-    <button class="iconbtn" data-a="view" aria-label="Changer l'affichage">${ic(S.settings.view === "grid" ? "list" : "grid")}</button>
+    <button class="iconbtn" data-a="view" aria-label="Afficher">${ic(S.settings.view === "list" || S.settings.view === "simple" ? "list" : "grid")}</button>
     <button class="iconbtn" data-a="more" aria-label="Plus d'options">${ic("more")}</button>
   </div>
   <div class="home-summary"><span>${S.archive ? archived + " note(s) archivée(s)" : total + " note(s) · " + folders().length + " dossiers"}</span><span class="syncpill ${S.mode === "local" ? "local" : ""}"><i></i>${S.mode === "cloud" ? "Compte connecté" : "Sur cet appareil"}</span></div>
   <label class="searchbox">${ic("search", "sm")}<input id="q" aria-label="Rechercher une note" placeholder="${S.archive ? "Rechercher dans les archives" : S.folder ? "Rechercher dans ce dossier" : "Rechercher une note…"}" value="${esc(S.q)}" autocomplete="off"><button data-a="clearq" aria-label="Effacer la recherche" ${S.q ? "" : "hidden"}>${ic("x", "sm")}</button></label>
-  <div class="crumbs">${ic("folder", "sm")}<button data-crumb="">Toutes les notes</button>${path.map(f => `${ic("chev", "sm")}<button data-crumb="${f.id}">${esc(f.name)}</button>`).join("")}</div>
-  <div class="folders" ${S.archive ? "hidden" : ""}>
+  ${S.folder ? `<div class="crumbs">${ic("folder", "sm")}<button data-crumb="">Toutes les notes</button>${path.map(f => `${ic("chev", "sm")}<button data-crumb="${f.id}">${esc(f.name)}</button>`).join("")}</div>` : ""}
+  ${S.folder && !S.archive && kids.length ? `<div class="folders">
     ${kids.map(f => `<div class="fcard" role="button" tabindex="0" data-folder="${f.id}" style="--fc:var(--f-${f.color || "none"})"><span class="n">${countIn(f.id)}</span><span class="nm">${esc(f.name)}</span><button class="fmore" data-fmore="${f.id}" aria-label="Options du dossier">${ic("more", "sm")}</button></div>`).join("")}
-    <button class="fcard add" data-a="newfolder">${ic("plus")}<span style="font-size:12.5px;font-weight:600">${S.folder ? "Sous-dossier" : "Dossier"}</span></button>
-  </div>
+  </div>` : ""}
   <div class="chips">
     <button class="chip ${S.cat === "all" ? "on" : ""}" data-cat="all">Toutes</button>
     <button class="chip ${S.cat === "fav" ? "on" : ""}" data-cat="fav">${ic("star", "sm")}Favoris</button>
     ${cats.map(c => `<button class="chip ${S.cat === c ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}
     <button class="chip ghost" data-a="newcat">${ic("plus", "sm")}Étiquette</button>
   </div>
-  <div class="listbar"><span>${list.length} note${list.length > 1 ? "s" : ""}</span><div class="listbar-actions"><button class="sortbtn ${S.archive ? "archive-on" : ""}" data-a="archive">${ic("archive", "sm")}${S.archive ? "Notes actives" : "Archives"}${!S.archive && archived ? ` (${archived})` : ""}</button><button class="sortbtn" data-a="sort">${ic("list", "sm")}${{ updated: "Modifiées", created: "Créées", title: "Titre" }[S.settings.sort]}</button></div></div>
-  ${list.length ? `<div class="notes ${S.settings.view === "list" ? "list" : ""}">${list.map(cardHtml).join("")}</div>` :
+  <div class="listbar"><span>${list.length} note${list.length > 1 ? "s" : ""}</span><div class="listbar-actions"><button class="sortbtn ${S.archive ? "archive-on" : ""}" data-a="archive">${ic("archive", "sm")}${S.archive ? "Notes actives" : "Archives"}${!S.archive && archived ? ` (${archived})` : ""}</button><button class="sortbtn" data-a="sort">${ic("list", "sm")}${(SORTS[S.settings.sort] || SORTS.updated).short}</button></div></div>
+  ${list.length ? notesHtml(list) :
       `<div class="empty"><span class="hand">${S.q ? "Aucun résultat" : "Rien ici pour l'instant"}</span>${S.q ? "Essayez un autre mot." : (S.archive ? "Les notes archivées apparaîtront ici." : "Touchez + pour écrire votre première note ici.")}</div>`}`;
   $$("#selbar button").forEach(b => b.disabled = S.selecting && !S.picked.size);
   $("#bnav").hidden = S.view === "editor" || S.selecting; $("#selbar").hidden = !S.selecting; $("#fab").hidden = S.view !== "home" || S.selecting;
@@ -972,15 +1023,19 @@ $("#v-home").addEventListener("click", async e => {
   if (a === "selcancel") { exitSelect(); return; }
   if (a === "archive") { S.archive = !S.archive; S.folder = null; S.cat = "all"; S.q = ""; renderHome(); return; }
   if (a === "backup") { backupDialog(); return; }
+  if (a === "drawer") { openDrawer(); return; }
   if (a === "search") { S.searchOpen = !S.searchOpen; if (!S.searchOpen) S.q = ""; renderHome(); if (S.searchOpen) $("#q").focus(); }
   if (a === "clearq") { S.q = ""; renderHome(); $("#q") && $("#q").focus(); }
-  if (a === "view") { S.settings.view = S.settings.view === "grid" ? "list" : "grid"; Store.putSettings(); renderHome(); }
-  if (a === "sort") { const v = await pick("Trier par", [{ label: "Date de modification", value: "updated" }, { label: "Date de création", value: "created" }, { label: "Titre (A → Z)", value: "title" }], S.settings.sort); if (v) { S.settings.sort = v; Store.putSettings(); renderHome(); } }
+  if (a === "view") { pickView(); return; }
+  if (a === "sort") { pickSort(); return; }
   if (a === "newfolder") newFolder(S.folder);
   if (a === "newcat") { const c = await askText("Nouvelle étiquette", "", { placeholder: "Ex : Santé, Projets, Recettes" }); if (c && !S.settings.categories.includes(c)) { S.settings.categories = [...S.settings.categories, c]; Store.putSettings(); S.cat = c; renderHome(); } }
   if (a === "more") {
-    const k = await menu("", [{ k: "select", icon: "check", label: "Sélectionner des notes", sub: "Ou restez appuyé sur une note" }, { k: "folders", icon: "folder", label: "Gérer les dossiers" }, { k: "trash", icon: "trash", label: "Corbeille" }, { k: "pdf", icon: "file", label: "Importer un PDF à annoter" }, S.aiAvailable && { k: "scan", icon: "scan", label: "Scanner un document (photo → texte)" }, S.settings.pin && { k: "lock", icon: "lock", label: "Verrouiller maintenant" }]);
+    const k = await menu("", [{ k: "search", icon: "search", label: "Recherche" }, { k: "select", icon: "check", label: "Sélectionner", sub: "Ou restez appuyé sur une note" }, { k: "view", icon: "grid", label: "Afficher", sub: VIEWS[S.settings.view] || VIEWS.grid }, { k: "sort", icon: "list", label: "Trier", sub: (SORTS[S.settings.sort] || SORTS.updated).label }, { k: "favtop", icon: "star", label: S.settings.favTop ? "Décrocher favoris du haut" : "Épingler favoris en haut" }, { k: "folders", icon: "folder", label: "Gérer les dossiers" }, { k: "trash", icon: "trash", label: "Corbeille" }, { k: "pdf", icon: "file", label: "Importer un PDF à annoter" }, S.aiAvailable && { k: "scan", icon: "scan", label: "Scanner un document (photo → texte)" }, S.settings.pin && { k: "lock", icon: "lock", label: "Verrouiller maintenant" }]);
     if (k === "select") enterSelect();
+    if (k === "search") { const q = $("#q"); if (q) { q.scrollIntoView({ block: "center" }); q.focus(); } }
+    if (k === "view") pickView(); if (k === "sort") pickSort();
+    if (k === "favtop") { S.settings.favTop = !S.settings.favTop; Store.putSettings(); renderHome(); toast(S.settings.favTop ? "Favoris affichés en haut" : "Favoris mélangés aux autres notes"); }
     if (k === "folders") manageFolders(); if (k === "trash") show("trash"); if (k === "pdf") importPdf(); if (k === "scan") scanToNote(); if (k === "lock") lockApp();
   }
 });
@@ -1003,6 +1058,41 @@ async function folderMenu(fid) {
     if (S.folder === fid) S.folder = f.parent || null;
     await Store.remove(fid); onDataChanged();
   }
+}
+function openDrawer() {
+  const live = liveNotes(), active = live.filter(n => !n.archived);
+  const tree = (parent, depth) => folders().filter(f => (f.parent || null) === parent).sort((a, b) => (a.created || 0) - (b.created || 0))
+    .map(f => `<button class="drow sub ${S.folder === f.id ? "on" : ""}" data-dr="folder" data-id="${f.id}" style="padding-left:${16 + depth * 18}px"><span class="fdot" style="background:var(--f-${f.color || "none"})"></span><span class="dl">${esc(f.name)}</span><span class="dn">${countIn(f.id)}</span></button>` + tree(f.id, depth + 1)).join("");
+  const on = k => (k === "all" && !S.archive && !S.folder && S.cat === "all") || (k === "fav" && !S.archive && S.cat === "fav") || (k === "arch" && S.archive) ? "on" : "";
+  const row = (k, icon, label, n) => `<button class="drow ${on(k)}" data-dr="${k}">${ic(icon)}<span class="dl">${label}</span><span class="dn">${n}</span></button>`;
+  const wrap = document.createElement("div");
+  wrap.className = "drawer-scrim";
+  wrap.innerHTML = `<aside class="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-top"><button class="iconbtn" data-dr="set" aria-label="Réglages">${ic("set")}</button></div>
+    ${row("all", "note", "Toutes les notes", active.length)}
+    ${row("fav", "star", "Favoris", active.filter(n => n.fav).length)}
+    ${row("rem", "bell", "Rappels", active.filter(n => n.reminder && !n.reminder.done).length)}
+    ${row("arch", "archive", "Archives", live.filter(n => n.archived).length)}
+    ${row("trash", "trash", "Corbeille", notes().filter(n => n.deleted).length)}
+    <hr class="ddots">
+    <button class="drow" data-dr="folders">${ic("folder")}<span class="dl">Dossiers</span><span class="dn">${active.filter(n => n.folder).length}</span></button>
+    ${tree(null, 1)}
+    <button class="btn drawer-manage" data-dr="manage">Gérer les dossiers</button>
+  </aside>`;
+  const close = () => { wrap.classList.add("out"); setTimeout(() => wrap.remove(), 160); };
+  wrap.addEventListener("click", e => {
+    if (e.target === wrap) { close(); return; }
+    const b = e.target.closest("[data-dr]"); if (!b) return;
+    const k = b.dataset.dr; close();
+    if (k === "set") { show("set"); return; }
+    if (k === "trash") { show("trash"); return; }
+    if (k === "rem") { show("rem"); return; }
+    if (k === "manage") { manageFolders(); return; }
+    S.q = ""; S.selecting = false;
+    S.archive = k === "arch"; S.cat = k === "fav" ? "fav" : "all"; S.folder = k === "folder" ? b.dataset.id : null;
+    show("home"); window.scrollTo(0, 0);
+  });
+  document.body.append(wrap);
 }
 function manageFolders() {
   const rows = [];
@@ -1240,6 +1330,20 @@ function buildEditor() {
   Ed.ro = new ResizeObserver(() => layoutInk()); Ed.ro.observe(page); Ed.ro.observe(body);
   layoutInk();
 }
+function updTyping() {
+  const ed = $("#ed"); if (!ed) return;
+  const a = document.activeElement;
+  const h = window.visualViewport ? visualViewport.height : innerHeight;
+  fullH = Math.max(fullH, h);
+  const keyboard = !matchMedia("(pointer: coarse)").matches || h < fullH * 0.8; // on phones, only while the keyboard is up
+  const typing = keyboard && !!a && (a.id === "ed-title" || !!(a.closest && a.closest("#ed-body"))) && !ed.classList.contains("drawing");
+  if (ed.classList.contains("typing") !== typing) ed.classList.toggle("typing", typing);
+}
+let fullH = 0;
+document.addEventListener("focusin", updTyping);
+(window.visualViewport || window).addEventListener("resize", () => setTimeout(updTyping, 50));
+addEventListener("orientationchange", () => { fullH = 0; });
+document.addEventListener("focusout", () => setTimeout(updTyping, 150));
 function renderMeta() {
   const n = Ed.note;
   const f = n.folder ? S.items.get(n.folder) : null;
@@ -2587,7 +2691,7 @@ async function importJson() {
   for(const x of cleaned){if(x.kind==="revision" && combined.get(x.noteId)?.kind!=="note")continue;Store.put(x,100);}
   const st=data.settings;
   if(st && typeof st==="object"){
-    const allowed={theme:["system","light","dark"],accent:["green","blue","coral","violet","amber"],size:["s","m","l","xl"],view:["grid","list"],sort:["updated","created","title"],aiLang:LANGS,defPaper:["plain","lines","grid","dots"]};
+    const allowed={theme:["system","light","dark"],accent:["green","blue","coral","violet","amber"],size:["s","m","l","xl"],view:Object.keys(VIEWS),sort:Object.keys(SORTS),aiLang:LANGS,defPaper:["plain","lines","grid","dots"]};
     for(const [k,values]of Object.entries(allowed))if(values.includes(st[k]))S.settings[k]=st[k];
     if(Array.isArray(st.categories))S.settings.categories=[...new Set([...S.settings.categories,...st.categories.map(String).map(x=>x.slice(0,100))])];
   }
@@ -2617,7 +2721,8 @@ function renderSet() {
     <div class="set"><span class="lbl">Thème</span>${seg("theme",[["system","Auto"],["light","Clair"],["dark","Sombre"]])}</div>
     <div class="set"><span class="lbl">Couleur principale</span><div class="swrow" style="margin:0">${["green","blue","coral","violet","amber"].map(a=>`<button class="sw ${st.accent===a ? "on" : ""}" data-accent="${a}" style="background:var(--acc-${a})" aria-label="${a}"></button>`).join("")}</div></div>
     <div class="set"><span class="lbl">Texte des notes</span>${seg("size",[["s","S"],["m","M"],["l","L"],["xl","XL"]])}</div>
-    <div class="set"><span class="lbl">Affichage</span>${seg("view",[["grid","Grille"],["list","Liste"]])}</div>
+    ${setLink("viewpick","Affichage",VIEWS[st.view] || VIEWS.grid)}
+    ${setLink("sortpick","Trier les notes",(SORTS[st.sort] || SORTS.updated).label)}
   </div>
   <div class="group" style="margin-top:14px">${setLink("adv","Avancés",adv ? "" : "Sauvegarde, archives, corbeille, étiquettes, assistant IA",`<span class="chev" style="transform:rotate(${adv ? 90 : 0}deg);display:inline-flex">${ic("chev","sm")}</span>`)}</div>
   ${adv ? `
@@ -2658,6 +2763,8 @@ $("#v-set").addEventListener("click",async e=>{
   if(a==="trash")show("trash");
   if(a==="export")backupDialog();
   if(a==="import")importJson();
+  if(a==="viewpick"){await pickView();renderSet();}
+  if(a==="sortpick"){await pickSort();renderSet();}
   if(a==="adv"){S.setAdv=!S.setAdv;renderSet();}
   if(a==="defpaper"){const v=await pick("Style de note par défaut",[{label:"Vierge",value:"plain"},{label:"Lignée",value:"lines",sub:"Comme un cahier"},{label:"Quadrillée",value:"grid",sub:"Petits carreaux"},{label:"Pointillée",value:"dots",sub:"Bullet journal"}],S.settings.defPaper||"plain");if(v){S.settings.defPaper=v;Store.putSettings();renderSet();toast("Les nouvelles notes utiliseront ce style.");}}
   if(a==="gdrive")infoSheet("Google Drive et Google Agenda","<p>La sauvegarde de vos notes sur Google Drive et l’envoi de vos rappels vers Google Agenda arriveront dès que votre compte Google sera connecté à Claude.</p><p>Pour l’instant, utilisez « Avancés » puis « Sauvegarder » pour obtenir un fichier, que vous pouvez mettre sur Google Drive.</p>");
