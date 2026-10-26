@@ -1,8 +1,7 @@
 name: Site web
 
+# Manual for now: enable Settings → Pages → Source: GitHub Actions, then add `push: branches: [main]` back.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
