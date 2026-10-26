@@ -1,0 +1,31 @@
+name: Projet Code Assist
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - name: Build the web app and the Code Assist zip
+        run: npm run codeassist
+      - name: Check the simple Android project builds
+        working-directory: codeassist/SebenNotes
+        run: ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SebenNotes-CodeAssist
+          path: dist/SebenNotes-CodeAssist.zip

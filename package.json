@@ -5,7 +5,8 @@
   "description": "Seben Notes : bloc-notes intelligent (site installable et application Android).",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "android": "npm run build && npx cap sync android"
+    "android": "npm run build && npx cap sync android",
+    "codeassist": "npm run build && node scripts/codeassist.mjs"
   },
   "dependencies": {
     "@capacitor/android": "6.2.2",
