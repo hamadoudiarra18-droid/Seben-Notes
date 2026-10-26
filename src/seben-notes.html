@@ -121,6 +121,9 @@ input,select,textarea{font:inherit;color:inherit}
 .ed-save[data-state="error"]{color:var(--danger)}
 .ed-meta{flex:none;display:flex;gap:6px;overflow-x:auto;padding:0 max(12px,env(safe-area-inset-left,0px)) 8px;scrollbar-width:none}
 .ed-meta::-webkit-scrollbar{display:none}
+/* While typing (keyboard open), keep only the title, the text and the format bar */
+.ed.typing .ed-meta,.ed.typing .ed-tools,.ed.typing .ed-save,.ed.typing .addpage{display:none}
+.ed.typing .topbar{padding-top:4px;padding-bottom:4px;min-height:0}
 .ed-meta .chip{height:30px;font-size:12.5px;padding:0 10px}
 .ed-meta .dot{width:12px;height:12px;border-radius:50%;background:var(--tint);border:1px solid var(--line)}
 .ed-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px max(10px,env(safe-area-inset-right,0px)) 30px max(10px,env(safe-area-inset-left,0px))}
@@ -1240,6 +1243,20 @@ function buildEditor() {
   Ed.ro = new ResizeObserver(() => layoutInk()); Ed.ro.observe(page); Ed.ro.observe(body);
   layoutInk();
 }
+function updTyping() {
+  const ed = $("#ed"); if (!ed) return;
+  const a = document.activeElement;
+  const h = window.visualViewport ? visualViewport.height : innerHeight;
+  fullH = Math.max(fullH, h);
+  const keyboard = !matchMedia("(pointer: coarse)").matches || h < fullH * 0.8; // on phones, only while the keyboard is up
+  const typing = keyboard && !!a && (a.id === "ed-title" || !!(a.closest && a.closest("#ed-body"))) && !ed.classList.contains("drawing");
+  if (ed.classList.contains("typing") !== typing) ed.classList.toggle("typing", typing);
+}
+let fullH = 0;
+document.addEventListener("focusin", updTyping);
+(window.visualViewport || window).addEventListener("resize", () => setTimeout(updTyping, 50));
+addEventListener("orientationchange", () => { fullH = 0; });
+document.addEventListener("focusout", () => setTimeout(updTyping, 150));
 function renderMeta() {
   const n = Ed.note;
   const f = n.folder ? S.items.get(n.folder) : null;
